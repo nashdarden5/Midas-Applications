@@ -1,0 +1,68 @@
+name: BlakeyPoo iOS build
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'apps/BlakeyPoo/**'
+      - '.github/workflows/blakeypoo-ios.yml'
+      - 'midas_ios_pipeline.py'
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate Xcode project
+        run: cd apps/BlakeyPoo && xcodegen generate
+      - name: Run source acceptance checks
+        run: python3 midas_ios_pipeline.py check --name BlakeyPoo | tee /tmp/ios-check.json && python3 -c 'import json; assert json.load(open("/tmp/ios-check.json"))["passed"]'
+      - name: Build simulator app
+        run: cd apps/BlakeyPoo && xcodebuild -project BlakeyPoo.xcodeproj -scheme BlakeyPoo -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath "$RUNNER_TEMP/blakeypoo-derived" CODE_SIGNING_ALLOWED=NO build
+      - name: Run iOS simulator UI smoke test
+        run: |
+          cd apps/BlakeyPoo
+          xcodebuild -project BlakeyPoo.xcodeproj -scheme BlakeyPoo -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 16' -derivedDataPath "$RUNNER_TEMP/blakeypoo-derived" CODE_SIGNING_ALLOWED=NO test
+      - name: Export UI test results
+        if: always()
+        run: |
+          cd apps/BlakeyPoo
+          echo "See GitHub Actions test logs for XCTest result and simulator evidence."
+      - name: Package simulator app
+        if: success()
+        run: |
+          cd "$RUNNER_TEMP/blakeypoo-derived/Build/Products/Debug-iphonesimulator"
+          ditto -c -k --sequesterRsrc --keepParent BlakeyPoo.app "$RUNNER_TEMP/BlakeyPoo-simulator.zip"
+      - name: Upload simulator build
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: BlakeyPoo-iOS-simulator
+          path: ${{ runner.temp }}/BlakeyPoo-simulator.zip
+          retention-days: 14
+
+  iphone-device-ipa:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate Xcode project
+        run: cd apps/BlakeyPoo && xcodegen generate
+      - name: Compile physical iPhone arm64 app (unsigned)
+        run: |
+          cd apps/BlakeyPoo
+          xcodebuild -project BlakeyPoo.xcodeproj -scheme BlakeyPoo -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath "$RUNNER_TEMP/iphone-derived" CODE_SIGNING_ALLOWED=NO build
+      - name: Package IPA for local Windows signing
+        run: |
+          mkdir -p "$RUNNER_TEMP/ipa/Payload"
+          cp -R "$RUNNER_TEMP/iphone-derived/Build/Products/Release-iphoneos/BlakeyPoo.app" "$RUNNER_TEMP/ipa/Payload/"
+          cd "$RUNNER_TEMP/ipa"
+          /usr/bin/zip -qr "$RUNNER_TEMP/BlakeyPoo-unsigned-device.ipa" Payload
+          /usr/bin/unzip -l "$RUNNER_TEMP/BlakeyPoo-unsigned-device.ipa" | grep 'Payload/BlakeyPoo.app/'
+      - name: Upload unsigned device IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: BlakeyPoo-unsigned-iPhone-IPA
+          path: ${{ runner.temp }}/BlakeyPoo-unsigned-device.ipa
+          retention-days: 14

@@ -1,0 +1,27 @@
+name: BlakeyPoo
+options:
+  bundleIdPrefix: com.projectmidas
+targets:
+  BlakeyPoo:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources: [BlakeyPoo]
+    settings:
+      base:
+        SWIFT_VERSION: "5.9"
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        TARGETED_DEVICE_FAMILY: "1,2"
+        CODE_SIGN_STYLE: Automatic
+  BlakeyPooUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources: [BlakeyPooUITests]
+    dependencies:
+      - target: BlakeyPoo
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        SWIFT_VERSION: "5.9"
