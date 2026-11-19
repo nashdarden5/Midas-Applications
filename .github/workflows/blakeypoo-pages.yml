@@ -27,6 +27,13 @@ jobs:
         env:
           GSA_API_KEY: ${{ secrets.GSA_API_KEY }}
         run: python3 scripts/refresh_market_feeds.py
+      - name: Import contract-authorized provider feed when configured
+        env:
+          BLAKEYPOO_LICENSED_FEED_ENABLED: ${{ vars.BLAKEYPOO_LICENSED_FEED_ENABLED }}
+          BLAKEYPOO_LICENSED_FEED_URL: ${{ vars.BLAKEYPOO_LICENSED_FEED_URL }}
+          BLAKEYPOO_LICENSED_FEED_HOST: ${{ vars.BLAKEYPOO_LICENSED_FEED_HOST }}
+          BLAKEYPOO_LICENSED_FEED_TOKEN: ${{ secrets.BLAKEYPOO_LICENSED_FEED_TOKEN }}
+        run: python3 scripts/licensed_feed_pipeline.py
       - name: Verify dashboard logic and PWA assets
         run: |
           node --check docs/dashboard.js
@@ -34,6 +41,7 @@ jobs:
           node tests-blakeypoo.cjs
           python3 scripts/test_gsa_vehicles.py
           python3 scripts/test_market_feeds.py
+          python3 scripts/test_licensed_feed_pipeline.py
           test -f docs/icon-180.png && test -f docs/icon-512.png
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
