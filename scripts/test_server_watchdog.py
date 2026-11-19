@@ -10,3 +10,6 @@ assert any(e['type']=='closing' for e in b['events'])
 c=run(b,record(4500,now-dt.timedelta(hours=1)),{},sold,now);assert len(c['events'])==len(b['events'])
 d=run(c,record(4700,now-dt.timedelta(days=3)),{},sold,now);assert len(d['events'])==len(c['events'])
 print('Server Watchdog state, change detection, deduplication and stale-data tests PASS')
+
+# A second run with the same source observations must preserve the baseline.
+assert c['snapshots']['fixture']['bid']==4500

@@ -36,8 +36,14 @@ jobs:
         run: python3 scripts/licensed_feed_pipeline.py
       - name: Restore persisted Watchdog history
         run: |
-          git fetch -q origin blakeypoo-watchdog-state || true
-          git show origin/blakeypoo-watchdog-state:watchdog-state.json > watchdog-state.json 2>/dev/null || echo '{}' > watchdog-state.json
+          if git fetch -q origin refs/heads/blakeypoo-watchdog-state; then
+            git show FETCH_HEAD:watchdog-state.json > watchdog-state.json
+            python3 -m json.tool watchdog-state.json >/dev/null
+            echo 'Restored persisted Watchdog history'
+          else
+            echo '{}' > watchdog-state.json
+            echo 'Initializing first Watchdog baseline'
+          fi
       - name: Build scheduled Watchdog snapshot and public activity
         run: python3 scripts/server_watchdog.py
       - name: Persist Watchdog history to isolated branch
