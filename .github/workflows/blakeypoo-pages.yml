@@ -2,7 +2,7 @@ name: Publish BlakeyPoo web app
 on:
   push:
     branches: [main]
-    paths: ['docs/**', '.github/workflows/blakeypoo-pages.yml']
+    paths: ['docs/**', 'tests-blakeypoo.cjs', '.github/workflows/blakeypoo-pages.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -19,6 +19,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Verify dashboard logic and PWA assets
+        run: |
+          node --check docs/dashboard.js
+          node --check docs/sw.js
+          node tests-blakeypoo.cjs
+          test -f docs/icon-180.png && test -f docs/icon-512.png
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
