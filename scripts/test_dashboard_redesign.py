@@ -9,6 +9,6 @@ for name in ['hero-tagline','overview-heading','metric-icon','nav-icon']:
  assert name in html and f'.{name}' in css,name
 for token in ['.nav button[aria-current=page]','@media(max-width:600px)','@media(max-width:390px)','@media(prefers-reduced-motion:reduce)','.top-deal-card:hover','.watchdog-event','.deal-winner-card','.feed-health-item']:
  assert token in css,token
-assert 'blakeypoo-shell-v42' in sw
+assert 'blakeypoo-shell-v42-1' in sw
 assert "function renderTopDeals()" in js
 print('Dashboard navigation, view IDs, metric bindings, responsive layout, visual hierarchy and reduced motion PASS')

@@ -7,5 +7,5 @@ for selector in ['.resale-dialog{max-width:calc(100vw - 16px)', '.watchdog-event
  assert selector in c,selector
 for token in ['function renderTopDeals()', 'function renderWatchdog()', 'function renderAlertSettings()']:
  assert token in j,token
-assert 'blakeypoo-shell-v42' in sw
+assert 'blakeypoo-shell-v42-1' in sw
 print('Mobile usability layout contracts, navigation, dialogs, saved auctions, Watchdog, slogan PASS')
