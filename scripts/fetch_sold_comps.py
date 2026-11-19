@@ -26,20 +26,20 @@ def main():
  rows=json.loads((ROOT/'docs'/'gsa-vehicles.json').read_text())['listings']+json.loads((ROOT/'docs'/'govdeals-vehicles.json').read_text())['listings']
  keys=list(dict.fromkeys(identity(x['title']) for x in rows if identity(x['title'])))
  # Search specific year/make/model, plus selected high-frequency passenger models.
- queries=[' '.join(k) for k in keys[:42]]
+ queries=[' '.join(k) for k in keys[:90]]
  urls=set()
  def search(q):
   try:
    s=fetch('https://uxsearch.app/search?q='+urllib.parse.quote(q));return [a['href'] for a in s.select('a[href*="/sold/"]') if re.fullmatch(r'https://uxsearch\.app/sold/[a-z0-9-]+',a.get('href',''))][:6]
   except Exception:return []
- with concurrent.futures.ThreadPoolExecutor(max_workers=5) as pool:
+ with concurrent.futures.ThreadPoolExecutor(max_workers=8) as pool:
   for result in pool.map(search,queries):urls.update(result)
  old=[]
  try:old=json.loads(OUT.read_text()).get('listings',[])
  except Exception:pass
  by_url={x['url']:x for x in old if x.get('verified') is True and x.get('url','').startswith(('https://uxsearch.app/sold/','https://govauctions.app/auction/'))}
- with concurrent.futures.ThreadPoolExecutor(max_workers=6) as pool:
-  for row in pool.map(sold_detail,sorted(urls)[:125]):
+ with concurrent.futures.ThreadPoolExecutor(max_workers=8) as pool:
+  for row in pool.map(sold_detail,sorted(urls)[:240]):
    if row:by_url[row['url']]=row
  if not by_url:raise RuntimeError('No verified sold records; refusing to replace previous feed')
  entries=sorted(by_url.values(),key=lambda x:x['sold_date'],reverse=True)[:350]

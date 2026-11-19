@@ -21,3 +21,5 @@
 .watchlist-alert{border:1px solid #d9b65a;background:#4b3b18;color:#fff0ba;border-radius:10px;padding:9px 12px;font-size:13px;font-weight:750}
 
 .feed-health-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}.feed-health-item{border:1px solid #415e72;border-radius:12px;padding:12px;display:grid;gap:5px}.feed-health-error{color:#ffbb9d;font-size:12px;overflow-wrap:anywhere}
+
+.top-deals-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:12px}.top-deal-card{border:1px solid #526477;border-radius:12px;padding:14px;display:grid;gap:8px}.top-deal-card h3{margin:0}.top-deal-card p{margin:0}.top-deal-card strong{color:#a5f1ad}
