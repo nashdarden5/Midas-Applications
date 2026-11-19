@@ -13,6 +13,13 @@ def fetch(url):
 VEHICLE_WORDS=re.compile(r'\b(?:Ford|Chevrolet|Chevy|Dodge|Jeep|Toyota|Honda|Nissan|Hyundai|Kia|GMC|Ram|Buick|Chrysler|BMW|Scion|Freightliner|International|Pierce|GEM|Sedan|SUV|Pickup|Truck|Van|Motorhome|Bus|Tahoe|Explorer|Altima|Civic|Accord|Cherokee|Fusion|Charger|Veloster|Rogue|Escape|Silverado)\b',re.I)
 def main():
  items=[];errors=[];sources=[]
+ observed=dt.datetime.now(dt.timezone.utc).isoformat()
+ def mark(item):
+  item['observed_at']=observed
+  item['verification']='third_party_observed'
+  item['auction_verified']=False
+  item['freshness_note']='Observed on public third-party page; official GovDeals live status not verified'
+  return item
  try:
   page=fetch(BASE+'/platforms/govdeals?category=vehicles')
   for card in page.select('a.v2-lot[data-cat="vehicles"][href^="/auction/"]')[:30]:
@@ -26,7 +33,7 @@ def main():
    image=photo.get('src','') if photo else ''
    if not image.startswith('https://webassets.lqdt1.com/'):image=''
    loc=where.get_text(' ',strip=True);parts=loc.rsplit(',',1)
-   items.append({'id':'govdeals:'+link.rsplit('/',2)[-2]+'-'+link.rsplit('/',1)[-1], 'title':title.get_text(' ',strip=True)[:180], 'url':link,'image':image,'price':price,'ends':closing.get('data-closes','') if closing else '', 'city':parts[0].strip(),'state':parts[1].strip() if len(parts)>1 else '', 'source':'GovDeals via UX Search','lat':None,'lon':None})
+   items.append(mark({'id':'govdeals:'+link.rsplit('/',2)[-2]+'-'+link.rsplit('/',1)[-1], 'title':title.get_text(' ',strip=True)[:180], 'url':link,'image':image,'price':price,'ends':closing.get('data-closes','') if closing else '', 'city':parts[0].strip(),'state':parts[1].strip() if len(parts)>1 else '', 'source':'GovDeals via UX Search','lat':None,'lon':None}))
  except Exception as exc:errors.append('UX Search: '+str(exc)[:120]);print('GovDeals discovery unavailable:',exc)
  # Public category, home, and discovery search pages provide distinct subsets.
  # Only vehicle-category cards with GovDeals seller/asset IDs qualify.
@@ -54,7 +61,7 @@ def main():
       original=urllib.parse.parse_qs(parsed.query).get('url',[''])[0]
       if original.startswith('https://files.lqdt1.com/photos/'):image=original
     location=re.search(r'\b([A-Za-z .-]+),\s*([A-Z]{2})\b',content)
-    items.append({'id':'govdeals:'+asset+'-'+seller,'title':heading.get_text(' ',strip=True)[:180], 'url':link,'image':image,'price':price,'ends':'','city':location.group(1)[-80:].strip() if location else '', 'state':location.group(2) if location else '', 'source':'GovDeals via GovAuctions.app','lat':None,'lon':None,'source_page':'https://govauctions.app'+card['href']})
+    items.append(mark({'id':'govdeals:'+asset+'-'+seller,'title':heading.get_text(' ',strip=True)[:180], 'url':link,'image':image,'price':price,'ends':'','city':location.group(1)[-80:].strip() if location else '', 'state':location.group(2) if location else '', 'source':'GovDeals via GovAuctions.app','lat':None,'lon':None,'source_page':'https://govauctions.app'+card['href']}))
     added+=1
    source_stats[source_url]=added
   except Exception as exc:errors.append('GovAuctions.app discovery '+source_url+': '+str(exc)[:90]);print('Secondary discovery unavailable:',source_url,exc)
