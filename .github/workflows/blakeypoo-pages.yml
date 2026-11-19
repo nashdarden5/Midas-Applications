@@ -7,7 +7,7 @@ on:
     - cron: '23 */6 * * *'
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 concurrency:
@@ -34,6 +34,16 @@ jobs:
           BLAKEYPOO_LICENSED_FEED_HOST: ${{ vars.BLAKEYPOO_LICENSED_FEED_HOST }}
           BLAKEYPOO_LICENSED_FEED_TOKEN: ${{ secrets.BLAKEYPOO_LICENSED_FEED_TOKEN }}
         run: python3 scripts/licensed_feed_pipeline.py
+      - name: Restore persisted Watchdog history
+        run: |
+          git fetch -q origin blakeypoo-watchdog-state || true
+          git show origin/blakeypoo-watchdog-state:watchdog-state.json > watchdog-state.json 2>/dev/null || echo '{}' > watchdog-state.json
+      - name: Build scheduled Watchdog snapshot and public activity
+        run: python3 scripts/server_watchdog.py
+      - name: Persist Watchdog history to isolated branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/persist_watchdog_state.sh
       - name: Verify dashboard logic and PWA assets
         run: |
           node --check docs/dashboard.js
@@ -46,6 +56,7 @@ jobs:
           python3 scripts/test_comparison.py
           python3 scripts/test_deal_winner.py
           python3 scripts/test_watchdog.py
+          python3 scripts/test_server_watchdog.py
           test -f docs/icon-180.png && test -f docs/icon-512.png
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
