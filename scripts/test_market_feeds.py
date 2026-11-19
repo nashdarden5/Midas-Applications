@@ -19,8 +19,15 @@ print('Market feed validation PASS:',gov['count'],'GovDeals auctions,',len(sold[
 
 # Cross-check derived GovDeals links against the original source-page seller/asset identifiers.
 for x in gov['listings']:
- if 'source_page' in x:
+ if x.get('source_page','').startswith('https://govauctions.app/'):
   import re
   m=re.search(r'-govdeals-(\d+)-(\d+)$',x['source_page'])
   assert m and x['url']==f'https://www.govdeals.com/asset/{m.group(2)}/{m.group(1)}'
-print('Official-link derivation PASS:',sum('source_page' in x for x in gov['listings']),'source-backed GovDeals links')
+print('Official-link derivation PASS:',sum(x.get('source_page','').startswith('https://govauctions.app/') for x in gov['listings']),'source-backed GovDeals links')
+
+for x in gov['listings']:
+ for key,field in x.get('details',{}).items():
+  assert key in {'seller','county','category','closing_text','first_seen','description','vin','mileage','condition','terms'}
+  assert field['value'] and field['source_url'].startswith('https://uxsearch.app/auction/')
+  assert field['verification']=='third_party_observed' and field['observed_at']
+print('Native detail provenance PASS:',sum(bool(x.get('details')) for x in gov['listings']),'enriched GovDeals records')

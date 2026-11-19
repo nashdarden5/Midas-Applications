@@ -11,6 +11,16 @@ def fetch(url):
  req=urllib.request.Request(url,headers={'User-Agent':'BlakeyPoo/1.0 public auction research'})
  with urllib.request.urlopen(req,timeout=25) as response:return BeautifulSoup(response.read(),'html.parser')
 VEHICLE_WORDS=re.compile(r'\b(?:Ford|Chevrolet|Chevy|Dodge|Jeep|Toyota|Honda|Nissan|Hyundai|Kia|GMC|Ram|Buick|Chrysler|BMW|Scion|Freightliner|International|Pierce|GEM|Sedan|SUV|Pickup|Truck|Van|Motorhome|Bus|Tahoe|Explorer|Altima|Civic|Accord|Cherokee|Fusion|Charger|Veloster|Rogue|Escape|Silverado)\b',re.I)
+def detail_fields(page,source_url,observed):
+ """Only public detail facts. Never infer VIN, mileage or GovDeals terms."""
+ result={}; allowed={'Seller':'seller','County':'county','Category':'category','Closes':'closing_text','First seen by UX Search':'first_seen'}
+ for term in page.select('dt'):
+  key=allowed.get(term.get_text(' ',strip=True));dd=term.find_next_sibling('dd')
+  if key and dd:
+   value=dd.get_text(' ',strip=True)[:500]
+   if value:result[key]={'value':value,'source_url':source_url,'observed_at':observed,'verification':'third_party_observed'}
+ return result
+
 def main():
  items=[];errors=[];sources=[]
  observed=dt.datetime.now(dt.timezone.utc).isoformat()
@@ -27,13 +37,13 @@ def main():
    if not title or not where:continue
    raw=card.get('data-p','');price=float(raw) if re.fullmatch(r'\d+(?:\.\d+)?',raw) else None
    try:
-    detail=fetch(BASE+card['href']);link=next((a['href'] for a in detail.select('a[href]') if re.fullmatch(r'https://www\.govdeals\.com/asset/\d+/\d+',a['href'])),None)
+    detail=fetch(BASE+card['href']);detail_url=BASE+card['href'];link=next((a['href'] for a in detail.select('a[href]') if re.fullmatch(r'https://www\.govdeals\.com/asset/\d+/\d+',a['href'])),None)
    except Exception:continue
    if not link or any(x['url']==link for x in items):continue
    image=photo.get('src','') if photo else ''
    if not image.startswith('https://webassets.lqdt1.com/'):image=''
    loc=where.get_text(' ',strip=True);parts=loc.rsplit(',',1)
-   items.append(mark({'id':'govdeals:'+link.rsplit('/',2)[-2]+'-'+link.rsplit('/',1)[-1], 'title':title.get_text(' ',strip=True)[:180], 'url':link,'image':image,'price':price,'ends':closing.get('data-closes','') if closing else '', 'city':parts[0].strip(),'state':parts[1].strip() if len(parts)>1 else '', 'source':'GovDeals via UX Search','lat':None,'lon':None}))
+   items.append(mark({'id':'govdeals:'+link.rsplit('/',2)[-2]+'-'+link.rsplit('/',1)[-1], 'title':title.get_text(' ',strip=True)[:180], 'url':link,'image':image,'price':price,'ends':closing.get('data-closes','') if closing else '', 'city':parts[0].strip(),'state':parts[1].strip() if len(parts)>1 else '', 'source':'GovDeals via UX Search','source_page':detail_url,'details':detail_fields(detail,detail_url,observed),'lat':None,'lon':None}))
  except Exception as exc:errors.append('UX Search: '+str(exc)[:120]);print('GovDeals discovery unavailable:',exc)
  # Public category, home, and discovery search pages provide distinct subsets.
  # Only vehicle-category cards with GovDeals seller/asset IDs qualify.
