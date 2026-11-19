@@ -1,1 +1,46 @@
-{"source":"No licensed verified sold-data feed connected","listings":[]}
+{
+  "source": "Individually verified public GovAuctions.app sold-listing pages (not a licensed bulk feed)",
+  "fetched_at": "2026-11-19",
+  "listings": [
+    {
+      "title": "2016 Chevrolet Tahoe",
+      "price": 7550,
+      "sold_date": "2026-11-16",
+      "url": "https://govauctions.app/auction/2016-chevrolet-tahoe-florida-govdeals-3047-3194",
+      "verified": true,
+      "notes": "Starts/runs/drives; 4WD; condition differs from other lots"
+    },
+    {
+      "title": "2016 Chevrolet Tahoe",
+      "price": 3800,
+      "sold_date": "2026-11-11",
+      "url": "https://govauctions.app/auction/2016-chevrolet-tahoe-louisiana-govdeals-552-7583",
+      "verified": true,
+      "notes": "2WD fleet; A/C not working; airbag light"
+    },
+    {
+      "title": "2016 Chevrolet Tahoe",
+      "price": 2530,
+      "sold_date": "2026-11-10",
+      "url": "https://govauctions.app/auction/2016-chevrolet-tahoe-ohio-govdeals-21817-10337",
+      "verified": true,
+      "notes": "Engine mechanical issues; not comparable to running vehicles"
+    },
+    {
+      "title": "2016 Chevrolet Tahoe",
+      "price": 3050,
+      "sold_date": "2026-11-13",
+      "url": "https://govauctions.app/auction/2016-chevy-tahoe-indiana-publicsurplus-4118157",
+      "verified": true,
+      "notes": "Runs/drives; poor condition; 109,432 mi"
+    },
+    {
+      "title": "2016 Chevrolet Tahoe",
+      "price": 5350,
+      "sold_date": "2026-10-21",
+      "url": "https://govauctions.app/auction/2016-chevrolet-tahoe-colorado-govdeals-96-20231",
+      "verified": true,
+      "notes": "152,221 mi; 4WD; starts with boost"
+    }
+  ]
+}
