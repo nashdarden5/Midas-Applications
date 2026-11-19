@@ -4,5 +4,5 @@ for token in ['top-deal-media','validPhoto','img.loading=\'lazy\'','img.decoding
  assert token in js,token
 for token in ['.top-deal-media img','.top-deal-no-photo','.top-deal-card:nth-child(3n+2)','.top-deal-card:nth-child(3n)','.top-deal-source','.metric:nth-child(1)','.watchdog-panel','.deal-winner-panel']:
  assert token in css,token
-assert 'blakeypoo-shell-v41' in sw
+assert 'blakeypoo-shell-v42' in sw
 print('Top Deals image fallback, approved sources, section colors, responsive styles and cache version PASS')

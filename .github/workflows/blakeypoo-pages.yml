@@ -93,6 +93,7 @@ jobs:
           python3 scripts/test_email_watchdog.py
           python3 scripts/test_top_deal_visuals.py
           python3 scripts/test_dashboard_redesign.py
+          python3 scripts/test_mobile_audit.py
           test -f docs/icon-180.png && test -f docs/icon-512.png
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
