@@ -43,8 +43,8 @@ def main():
     coords = zip_coords()
     listings = []
     IMAGES.mkdir(parents=True,exist_ok=True)
-    for old in IMAGES.glob('*.jpg'):
-        old.unlink()
+    # Keep previously verified official photos: CI may receive HTTP 403 from the GSA image CDN.
+    # Never delete valid cached photos during a refresh.
     for x in rows:
         title = str(x.get('itemName') or '').strip()
         if not PATTERN.search(title) or EXCLUDE.search(title):continue
@@ -61,17 +61,21 @@ def main():
         lat,lon = coords[zip_code]
         local_photo = ''
         if photo:
-            try:
-                raw = get(photo)
-                if len(raw) > 8_000_000:raise ValueError('Image too large')
-                with Image.open(io.BytesIO(raw)) as im:
-                    im = ImageOps.exif_transpose(im).convert('RGB')
-                    im.thumbnail((900,650))
-                    name = hashlib.sha256((link+photo).encode()).hexdigest()[:20]+'.jpg'
-                    im.save(IMAGES/name,'JPEG',quality=78,optimize=True)
-                    local_photo = './auction-images/'+name
-            except Exception as exc:
-                print('Photo unavailable:',title[:35],str(exc)[:100])
+            name = hashlib.sha256((link+photo).encode()).hexdigest()[:20]+'.jpg'
+            cached = IMAGES/name
+            if cached.is_file() and cached.stat().st_size>1000:
+                local_photo = './auction-images/'+name
+            else:
+             try:
+                 raw = get(photo)
+                 if len(raw) > 8_000_000:raise ValueError('Image too large')
+                 with Image.open(io.BytesIO(raw)) as im:
+                     im = ImageOps.exif_transpose(im).convert('RGB')
+                     im.thumbnail((900,650))
+                     im.save(IMAGES/name,'JPEG',quality=78,optimize=True)
+                     local_photo = './auction-images/'+name
+             except Exception as exc:
+                 print('Photo unavailable:',title[:35],str(exc)[:100])
         listings.append({'id':str(x.get('saleNo') or '')+':'+str(x.get('lotNo') or ''),'title':title[:180], 'url':link,'image':local_photo,'image_source':photo,'price':bid,'lat':lat,'lon':lon,'city':str(x.get('propertyCity') or '').strip()[:80],'state':str(x.get('propertyState') or '').strip()[:2], 'zip':zip_code,'ends':str(x.get('aucEndDt') or '')[:10],'source':'GSA Auctions'})
     now = dt.datetime.now(dt.timezone.utc).isoformat(timespec='seconds')
     payload={'source':'GSA Auctions official API','fetched_at':now,'geolocation_precision':'ZIP code centroid (approximate)','count':len(listings),'listings':listings}
