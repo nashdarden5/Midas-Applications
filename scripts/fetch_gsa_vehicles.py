@@ -13,6 +13,7 @@ from PIL import Image, ImageOps
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'docs' / 'gsa-vehicles.json'
+ZIP_OUT = ROOT / 'docs' / 'us-zip-coordinates.json'
 IMAGES = ROOT / 'docs' / 'auction-images'
 GSA = 'https://api.gsa.gov/assets/gsaauctions/v2/auctions?format=JSON&api_key='
 GEONAMES = 'https://download.geonames.org/export/zip/US.zip'
@@ -41,6 +42,7 @@ def main():
     rows = json.loads(get(GSA + key)).get('Results', [])
     if not isinstance(rows, list):raise RuntimeError('GSA API returned unexpected shape')
     coords = zip_coords()
+    ZIP_OUT.write_text(json.dumps({k:[round(v[0],4),round(v[1],4)] for k,v in coords.items()},separators=(',',':'))+'\n')
     listings = []
     IMAGES.mkdir(parents=True,exist_ok=True)
     # Keep previously verified official photos: CI may receive HTTP 403 from the GSA image CDN.
