@@ -16,3 +16,11 @@ for x in sold['listings']:
  assert x['verified'] is True and x['price']>=0 and re.fullmatch(r'\d{4}-\d{2}-\d{2}',x['sold_date'])
  assert x['url'].startswith(('https://uxsearch.app/sold/','https://govauctions.app/auction/'))
 print('Market feed validation PASS:',gov['count'],'GovDeals auctions,',len(sold['listings']),'sold comparisons')
+
+# Cross-check derived GovDeals links against the original source-page seller/asset identifiers.
+for x in gov['listings']:
+ if 'source_page' in x:
+  import re
+  m=re.search(r'-govdeals-(\d+)-(\d+)$',x['source_page'])
+  assert m and x['url']==f'https://www.govdeals.com/asset/{m.group(2)}/{m.group(1)}'
+print('Official-link derivation PASS:',sum('source_page' in x for x in gov['listings']),'source-backed GovDeals links')
