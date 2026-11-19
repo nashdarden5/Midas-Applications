@@ -43,6 +43,6 @@ def main():
    if row:by_url[row['url']]=row
  if not by_url:raise RuntimeError('No verified sold records; refusing to replace previous feed')
  entries=sorted(by_url.values(),key=lambda x:x['sold_date'],reverse=True)[:350]
- OUT.write_text(json.dumps({'source':'UX Search public completed-auction pages + previously verified GovAuctions.app records','fetched_at':dt.datetime.now(dt.timezone.utc).isoformat(),'count':len(entries),'listings':entries},separators=(',',':'))+'\n')
+ OUT.write_text(json.dumps({'refresh_status':'ok' if urls else 'partial','refresh_errors':[] if urls else ['No new completed-sale search results; retained previously verified records'],'last_attempt_at':dt.datetime.now(dt.timezone.utc).isoformat(),'source':'UX Search public completed-auction pages + previously verified GovAuctions.app records','fetched_at':dt.datetime.now(dt.timezone.utc).isoformat(),'count':len(entries),'listings':entries},separators=(',',':'))+'\n')
  print('Sold comps:',len(entries),'unique search terms:',len(queries),'candidate pages:',len(urls))
 if __name__=='__main__':main()

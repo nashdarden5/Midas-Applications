@@ -3,6 +3,8 @@ import json,re
 from pathlib import Path
 root=Path(__file__).resolve().parents[1]/'docs'
 gov=json.loads((root/'govdeals-vehicles.json').read_text());sold=json.loads((root/'verified-sold-comps.json').read_text())
+assert gov['refresh_status'] in ('ok','partial','failed') and gov['last_attempt_at']
+assert sold['refresh_status'] in ('ok','partial','failed') and sold['last_attempt_at']
 assert gov['count']==len(gov['listings']) and gov['count']>0
 assert len({x['url'] for x in gov['listings']})==gov['count']
 for x in gov['listings']:

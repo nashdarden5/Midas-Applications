@@ -23,14 +23,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install image optimization dependency
         run: python3 -m pip install --quiet Pillow beautifulsoup4
-      - name: Refresh official GSA auction data
+      - name: Refresh all auction feeds with per-source failure reporting
         env:
           GSA_API_KEY: ${{ secrets.GSA_API_KEY }}
-        run: python3 scripts/fetch_gsa_vehicles.py
-      - name: Refresh public GovDeals discovery
-        run: python3 scripts/fetch_govdeals_vehicles.py
-      - name: Refresh completed-auction comparison data
-        run: python3 scripts/fetch_sold_comps.py
+        run: python3 scripts/refresh_market_feeds.py
       - name: Verify dashboard logic and PWA assets
         run: |
           node --check docs/dashboard.js
