@@ -45,3 +45,5 @@
 .watchdog-server{display:grid;gap:8px;border-bottom:1px solid #526477;padding-bottom:12px}.watchdog-server h4{margin:4px 0}
 
 .watchdog-alert-controls{border:1px solid #526477;border-radius:9px;padding:10px;margin:10px 0;display:grid;gap:8px}.watchdog-alert-controls h4{margin:0}.watchdog-alert-controls label{display:flex;gap:8px;align-items:center}
+
+.watchdog-email-setup{margin:10px 0;padding:10px;border:1px solid #526477;border-radius:9px}.watchdog-email-setup textarea{width:100%;margin-top:8px}

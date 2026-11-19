@@ -50,6 +50,32 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: bash scripts/persist_watchdog_state.sh
+      - name: Restore delivered email alert keys
+        run: |
+          git fetch -q origin refs/heads/blakeypoo-watchdog-state
+          if git cat-file -e FETCH_HEAD:watchdog-email-state.json 2>/dev/null; then
+            git show FETCH_HEAD:watchdog-email-state.json > watchdog-email-state.json
+            python3 -m json.tool watchdog-email-state.json >/dev/null
+          else
+            echo '{"seen":[]}' > watchdog-email-state.json
+          fi
+      - name: Deliver opt-in saved-auction email alerts
+        env:
+          BLAKEYPOO_EMAIL_ENABLED: ${{ vars.BLAKEYPOO_EMAIL_ENABLED }}
+          BLAKEYPOO_EMAIL_WATCH_IDS: ${{ secrets.BLAKEYPOO_EMAIL_WATCH_IDS }}
+          BLAKEYPOO_EMAIL_OPTED_IN_AT: ${{ vars.BLAKEYPOO_EMAIL_OPTED_IN_AT }}
+          BLAKEYPOO_SMTP_HOST: ${{ secrets.BLAKEYPOO_SMTP_HOST }}
+          BLAKEYPOO_SMTP_PORT: ${{ vars.BLAKEYPOO_SMTP_PORT }}
+          BLAKEYPOO_SMTP_USER: ${{ secrets.BLAKEYPOO_SMTP_USER }}
+          BLAKEYPOO_SMTP_PASSWORD: ${{ secrets.BLAKEYPOO_SMTP_PASSWORD }}
+          BLAKEYPOO_EMAIL_FROM: ${{ secrets.BLAKEYPOO_EMAIL_FROM }}
+          BLAKEYPOO_EMAIL_TO: ${{ secrets.BLAKEYPOO_EMAIL_TO }}
+        run: python3 scripts/email_watchdog.py
+      - name: Persist delivered email alert keys
+        if: ${{ vars.BLAKEYPOO_EMAIL_ENABLED == 'true' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/persist_email_state.sh
       - name: Verify dashboard logic and PWA assets
         run: |
           node --check docs/dashboard.js
@@ -64,6 +90,7 @@ jobs:
           python3 scripts/test_watchdog.py
           python3 scripts/test_server_watchdog.py
           python3 scripts/test_personal_alerts.py
+          python3 scripts/test_email_watchdog.py
           test -f docs/icon-180.png && test -f docs/icon-512.png
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
