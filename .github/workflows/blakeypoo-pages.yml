@@ -21,6 +21,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install image optimization dependency
+        run: python3 -m pip install --quiet Pillow
       - name: Refresh official GSA auction data
         env:
           GSA_API_KEY: ${{ secrets.GSA_API_KEY }}
