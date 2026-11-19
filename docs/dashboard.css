@@ -47,3 +47,16 @@
 .watchdog-alert-controls{border:1px solid #526477;border-radius:9px;padding:10px;margin:10px 0;display:grid;gap:8px}.watchdog-alert-controls h4{margin:0}.watchdog-alert-controls label{display:flex;gap:8px;align-items:center}
 
 .watchdog-email-setup{margin:10px 0;padding:10px;border:1px solid #526477;border-radius:9px}.watchdog-email-setup textarea{width:100%;margin-top:8px}
+
+/* v40: distinct sections, clear color hierarchy and image-led Top Deals cards. */
+:root{--accent-teal:#70e4cf;--accent-amber:#ffd27c;--accent-blue:#83b9ff;--accent-violet:#c4a5ff}
+#vehicle-feature{border-color:#367e8c;background:linear-gradient(155deg,#193c4b,#14263c 72%)}
+#view-discover .card:has(#top-deals-list){border-color:#936a3b;background:linear-gradient(155deg,#382c27,#1c2639 70%)}
+#feed-health{border-color:#416c88;background:linear-gradient(155deg,#19364c,#17253a 70%)}
+#view-saved>.card{border-color:#555e94;background:linear-gradient(155deg,#222b4a,#17253a 72%)}
+.metric:nth-child(1){border-color:#448d84;background:#173c3e}.metric:nth-child(2){border-color:#8c7141;background:#3b3027}.metric:nth-child(3){border-color:#6e5b9c;background:#302a47}
+.metric:nth-child(1) strong{color:var(--accent-teal)}.metric:nth-child(2) strong{color:var(--accent-amber)}.metric:nth-child(3) strong{color:var(--accent-violet)}
+.top-deals-list{gap:16px}.top-deal-card{overflow:hidden;padding:0 0 14px;background:linear-gradient(160deg,#263246,#142337 78%);border:1px solid #6c7390;box-shadow:0 8px 24px #0004;align-content:start}.top-deal-card:nth-child(3n+2){border-color:#6e8e9d;background:linear-gradient(160deg,#203b43,#142638 78%)}.top-deal-card:nth-child(3n){border-color:#997650;background:linear-gradient(160deg,#3b302e,#202638 78%)}
+.top-deal-card> :not(.top-deal-media){margin-left:13px;margin-right:13px}.top-deal-card h3{font-size:17px;line-height:1.3;color:#fff}.top-deal-media{position:relative;width:100%;aspect-ratio:16/10;background:#24364b;overflow:hidden}.top-deal-media img{display:block;width:100%;height:100%;object-fit:cover}.top-deal-no-photo{display:grid;place-items:center;width:100%;height:100%;font-weight:700;color:#d5e3f2;background:repeating-linear-gradient(135deg,#22374b,#22374b 16px,#293e51 16px,#293e51 32px)}.top-deal-source{position:absolute;bottom:9px;left:9px;padding:6px 10px;border-radius:999px;background:#101e30e8;border:1px solid #92b2c9;color:#f4f9ff;font-size:11px;font-weight:800;max-width:calc(100% - 18px)}.top-deal-card .profit-scenario:nth-child(1){background:#42312d;border-color:#9d6958}.top-deal-card .profit-scenario:nth-child(2){background:#183f39;border-color:#398b70}.top-deal-card .profit-scenario:nth-child(3){background:#26364b;border-color:#5179a6}.top-deal-card .profit-scenario:nth-child(2) strong{color:#9affce}.top-deal-card .watchlist-actions{margin-top:4px}
+.watchdog-panel{border-color:#5e7b9c;background:#1b2b3e}.deal-winner-panel{border-color:#9d814b;background:#2c2c35}.comparison-panel{border-color:#806baf;background:#25283e}.watchdog-event:nth-child(odd){background:#1a3541}.watchdog-event:nth-child(even){background:#272d48}
+@media(max-width:480px){.top-deal-card> :not(.top-deal-media){margin-left:11px;margin-right:11px}.top-deal-media{aspect-ratio:16/9}}
