@@ -25,3 +25,5 @@
 .top-deals-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:12px}.top-deal-card{border:1px solid #526477;border-radius:12px;padding:14px;display:grid;gap:8px}.top-deal-card h3{margin:0}.top-deal-card p{margin:0}.top-deal-card strong{color:#a5f1ad}
 
 .profit-scenarios{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.profit-scenario{border:1px solid #526477;border-radius:9px;padding:8px 4px;display:grid;text-align:center;gap:4px}.profit-scenario strong{font-size:clamp(12px,2vw,17px);overflow-wrap:anywhere}.profit-scenario:first-child strong{color:#ffccac}.profit-scenario:last-child strong{color:#b0f1c1}
+
+.bid-chart-svg{display:block;width:100%;height:auto;max-height:320px;background:#172838;border:1px solid #526477;border-radius:10px}.bid-chart-legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.bid-chart-legend span{padding-left:8px}.resale-dialog #bid-preview{width:100%}
