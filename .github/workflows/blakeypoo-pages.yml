@@ -29,12 +29,15 @@ jobs:
         run: python3 scripts/fetch_gsa_vehicles.py
       - name: Refresh public GovDeals discovery
         run: python3 scripts/fetch_govdeals_vehicles.py
+      - name: Refresh completed-auction comparison data
+        run: python3 scripts/fetch_sold_comps.py
       - name: Verify dashboard logic and PWA assets
         run: |
           node --check docs/dashboard.js
           node --check docs/sw.js
           node tests-blakeypoo.cjs
           python3 scripts/test_gsa_vehicles.py
+          python3 scripts/test_market_feeds.py
           test -f docs/icon-180.png && test -f docs/icon-512.png
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
